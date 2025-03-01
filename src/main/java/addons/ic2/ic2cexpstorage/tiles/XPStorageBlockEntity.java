@@ -18,7 +18,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -69,46 +68,44 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
 
     @Override
     public void onTick() {
-        if (this.isSimulating()) {
-            // change to active when storing xp
-            if (this.getXpStorage() > 0) {
-                this.setActive(true);
-            }
+        // change to active when storing xp
+        if (this.getXpStorage() > 0) {
+            this.setActive(true);
+        }
 
-            // use energy when active
-            if (this.isActive()) {
-                this.useEnergy(this.getEnergyUsage());
-            }
+        // use energy when active
+        if (this.isActive()) {
+            this.useEnergy(this.getEnergyUsage());
+        }
 
-            // check for Electric Enchanter every 2 seconds
-            if (this.clock(40)) {
-                this.energyUsage = calculateEnergyUsage(this.getXpStorage());
-                ElectricEnchanterTileEntity enchanter = getValidEnchanter();
-                if (enchanter != null) {
-                    int storedXP = enchanter.storedExperience;
-                    if (storedXP < 1000) {
-                        int needed = 1000 - storedXP;
-                        int offer = Math.min(needed, this.getXpStorage());
-                        this.xpStorage -= offer;
-                        this.updateGuiField("xpStorage");
-                        enchanter.storedExperience += offer;
-                        enchanter.updateGuiField("storedExperience");
-                    }
+        // check for Electric Enchanter every 2 seconds
+        if (this.clock(40)) {
+            this.energyUsage = calculateEnergyUsage(this.getXpStorage());
+            ElectricEnchanterTileEntity enchanter = getValidEnchanter();
+            if (enchanter != null) {
+                int storedXP = enchanter.storedExperience;
+                if (storedXP < 1000) {
+                    int needed = 1000 - storedXP;
+                    int offer = Math.min(needed, this.getXpStorage());
+                    this.xpStorage -= offer;
+                    this.updateGuiField("xpStorage");
+                    enchanter.storedExperience += offer;
+                    enchanter.updateGuiField("storedExperience");
                 }
             }
-
-            //check for player above and drain xp / no spectators or dead
-            List<Player> players = this.level.getEntitiesOfClass(Player.class, new AABB(this.getBlockPos()).inflate(0, 2, 0), player -> player.isAlive() && !player.isSpectator() && player.totalExperience > 0);
-            for (Player player : players) {
-                int xpLevel = player.totalExperience;
-                int drain = Math.min(100, xpLevel);
-                this.xpStorage += EnchantUtil.drainExperience(player, drain);
-                this.updateGuiField("xpStorage");
-            }
-
-            // handle energy comparator
-            this.handleComparators();
         }
+
+        //check for player above and drain xp / no spectators or dead
+        List<Player> players = this.level.getEntitiesOfClass(Player.class, new AABB(this.getBlockPos()).inflate(0, 2, 0), player -> player.isAlive() && !player.isSpectator() && player.totalExperience > 0);
+        for (Player player : players) {
+            int xpLevel = player.totalExperience;
+            int drain = Math.min(100, xpLevel);
+            this.xpStorage += EnchantUtil.drainExperience(player, drain);
+            this.updateGuiField("xpStorage");
+        }
+
+        // handle energy comparator
+        this.handleComparators();
     }
 
     @Override
