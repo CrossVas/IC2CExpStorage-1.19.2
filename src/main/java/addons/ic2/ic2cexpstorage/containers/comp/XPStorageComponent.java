@@ -7,6 +7,7 @@ import ic2.core.inventory.gui.components.GuiWidget;
 import ic2.core.inventory.gui.components.base.ToolTipButton;
 import ic2.core.utils.math.geometry.Box2i;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
@@ -55,11 +56,11 @@ public class XPStorageComponent extends GuiWidget {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void drawForeground(PoseStack matrix, int mouseX, int mouseY) {
-        Component text = Component.literal("" + this.TILE.getXpStorage()).withStyle(ChatFormatting.GREEN);
-        int xPos = 60 - gui.getFont().width(text.getVisualOrderText()) / 2;
+        Font font = gui.getFont();
+        Component text = this.string("" + this.TILE.getXpStorage()).withStyle(ChatFormatting.GREEN);
+        int xPos = 60 - font.width(text.getVisualOrderText()) / 2;
         int yPos = 60;
-        gui.getFont().drawShadow(matrix, text, xPos, yPos, 0);
-
+        font.drawShadow(matrix, text, xPos, yPos, 0);
     }
 
     private void transfer(boolean take) {

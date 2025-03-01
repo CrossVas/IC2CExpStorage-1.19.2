@@ -18,14 +18,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.List;
 import java.util.Set;
 
 public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITileGui, ITickListener {
@@ -77,7 +80,7 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
                 this.useEnergy(this.getEnergyUsage());
             }
 
-            // check for Electric Enchanter evert 2 seconds
+            // check for Electric Enchanter every 2 seconds
             if (this.clock(40)) {
                 this.energyUsage = calculateEnergyUsage(this.getXpStorage());
                 ElectricEnchanterTileEntity enchanter = getValidEnchanter();
@@ -90,9 +93,17 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
                         this.updateGuiField("xpStorage");
                         enchanter.storedExperience += offer;
                         enchanter.updateGuiField("storedExperience");
-
                     }
                 }
+            }
+
+            //check for player above and drain xp / no spectators or dead
+            List<Player> players = this.level.getEntitiesOfClass(Player.class, new AABB(this.getBlockPos()).inflate(0, 2, 0), player -> player.isAlive() && !player.isSpectator() && player.totalExperience > 0);
+            for (Player player : players) {
+                int xpLevel = player.totalExperience;
+                int drain = Math.min(100, xpLevel);
+                this.xpStorage += EnchantUtil.drainExperience(player, drain);
+                this.updateGuiField("xpStorage");
             }
 
             // handle energy comparator
