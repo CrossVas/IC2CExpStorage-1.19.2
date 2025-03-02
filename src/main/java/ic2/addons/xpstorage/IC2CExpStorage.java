@@ -1,6 +1,6 @@
-package ic2.addons.ic2cexpstorage;
+package ic2.addons.xpstorage;
 
-import ic2.addons.ic2cexpstorage.compat.JadeCompat;
+import ic2.addons.xpstorage.compat.JadeCompat;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;

@@ -1,6 +1,6 @@
-package ic2.addons.ic2cexpstorage.blocks;
+package ic2.addons.xpstorage.blocks;
 
-import ic2.addons.ic2cexpstorage.Refs;
+import ic2.addons.xpstorage.Refs;
 import ic2.core.block.base.drops.IBlockDropProvider;
 import ic2.core.block.base.tiles.BaseTileEntity;
 import ic2.core.block.machines.BaseMachineBlock;

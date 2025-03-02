@@ -1,6 +1,6 @@
-package ic2.addons.ic2cexpstorage.compat;
+package ic2.addons.xpstorage.compat;
 
-import ic2.addons.ic2cexpstorage.tiles.XPStorageBlockEntity;
+import ic2.addons.xpstorage.tiles.XPStorageBlockEntity;
 import ic2.jadeplugin.base.JadeCommonHandler;
 import ic2.jadeplugin.base.JadeHelper;
 import ic2.jadeplugin.base.interfaces.IInfoProvider;

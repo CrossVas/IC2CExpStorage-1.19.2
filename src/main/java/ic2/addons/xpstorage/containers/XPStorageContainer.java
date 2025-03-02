@@ -1,7 +1,7 @@
-package ic2.addons.ic2cexpstorage.containers;
+package ic2.addons.xpstorage.containers;
 
-import ic2.addons.ic2cexpstorage.containers.comp.XPStorageComponent;
-import ic2.addons.ic2cexpstorage.tiles.XPStorageBlockEntity;
+import ic2.addons.xpstorage.containers.comp.XPStorageComponent;
+import ic2.addons.xpstorage.tiles.XPStorageBlockEntity;
 import ic2.core.inventory.container.ContainerComponent;
 import ic2.core.inventory.gui.IC2Screen;
 import ic2.core.inventory.gui.components.simple.ChargebarComponent;

@@ -1,6 +1,6 @@
-package ic2.addons.ic2cexpstorage.containers.comp;
+package ic2.addons.xpstorage.containers.comp;
 
-import ic2.addons.ic2cexpstorage.tiles.XPStorageBlockEntity;
+import ic2.addons.xpstorage.tiles.XPStorageBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import ic2.core.inventory.gui.IC2Screen;
 import ic2.core.inventory.gui.components.GuiWidget;
