@@ -27,6 +27,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +37,9 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
     public int xpStorage = 0;
     protected int energyUsage = 0;
     TileCache<ElectricEnchanterTileEntity> ENCHANTER;
+
+    private List<Player> lastPlayers = new ArrayList<>();
+    private boolean playersFound = false;
 
     public XPStorageBlockEntity(BlockPos pos, BlockState state) {
         super(pos, state, 0, 512, 10000);
@@ -95,13 +99,25 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
             }
         }
 
-        //check for player above and drain xp / no spectators or dead
-        List<Player> players = this.level.getEntitiesOfClass(Player.class, new AABB(this.getBlockPos()).inflate(0, 2, 0), player -> player.isAlive() && !player.isSpectator() && player.totalExperience > 0);
-        for (Player player : players) {
-            int xpLevel = player.totalExperience;
-            int drain = Math.min(100, xpLevel);
-            this.xpStorage += EnchantUtil.drainExperience(player, drain);
-            this.updateGuiField("xpStorage");
+        // we don't want to update the list every tick
+        // we update it every tick only when players around,
+        // but we do have a delay of ~2 seconds when starting the drain action
+        // this will make sure we have no delay when drain action stops, the start isn't that important
+        // Thanks: Speiger - IC2C Dev.
+        if (this.clock(this.playersFound ? 1 : 40)) {
+            // gather players
+            this.lastPlayers = this.level.getEntitiesOfClass(Player.class, new AABB(this.getBlockPos()).inflate(0, 2, 0), player -> player.isAlive() && !player.isSpectator() && player.totalExperience > 0);
+            this.playersFound = !this.lastPlayers.isEmpty();
+        }
+
+        // drain player's xp
+        if (!this.lastPlayers.isEmpty()) {
+            for (Player player : this.lastPlayers) {
+                int xpLevel = player.totalExperience;
+                int drain = Math.min(100, xpLevel);
+                this.xpStorage += EnchantUtil.drainExperience(player, drain);
+                this.updateGuiField("xpStorage");
+            }
         }
 
         // handle energy comparator
