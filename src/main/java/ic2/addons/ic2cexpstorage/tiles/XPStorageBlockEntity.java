@@ -1,8 +1,8 @@
-package addons.ic2.ic2cexpstorage.tiles;
+package ic2.addons.ic2cexpstorage.tiles;
 
-import addons.ic2.ic2cexpstorage.IC2CExpStorageData;
-import addons.ic2.ic2cexpstorage.containers.XPStorageContainer;
-import addons.ic2.ic2cexpstorage.containers.comp.XPStorageComponent;
+import ic2.addons.ic2cexpstorage.IC2CExpStorageData;
+import ic2.addons.ic2cexpstorage.containers.XPStorageContainer;
+import ic2.addons.ic2cexpstorage.containers.comp.XPStorageComponent;
 import ic2.api.network.buffer.NetworkInfo;
 import ic2.api.util.DirectionList;
 import ic2.core.block.base.cache.TileCache;

@@ -1,7 +1,7 @@
-package addons.ic2.ic2cexpstorage;
+package ic2.addons.ic2cexpstorage;
 
-import addons.ic2.ic2cexpstorage.blocks.XPStorageBlock;
-import addons.ic2.ic2cexpstorage.tiles.XPStorageBlockEntity;
+import ic2.addons.ic2cexpstorage.blocks.XPStorageBlock;
+import ic2.addons.ic2cexpstorage.tiles.XPStorageBlockEntity;
 import ic2.core.platform.registries.IC2Tiles;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 

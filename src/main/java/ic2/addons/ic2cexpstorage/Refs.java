@@ -1,4 +1,4 @@
-package addons.ic2.ic2cexpstorage;
+package ic2.addons.ic2cexpstorage;
 
 public class Refs {
 
