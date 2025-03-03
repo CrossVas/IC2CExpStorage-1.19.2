@@ -169,6 +169,11 @@ dependencies {
     implementation fg.deobf("curse.maven:jade-324717:4914105")
 //    implementation fg.deobf("curse.maven:jade-addons-ic2classic-932859:6180964")
     implementation fg.deobf(files("libs/IC2CJadeAddon-1.19.2-2.0.4.1-dev.jar"))
+
+    implementation fg.deobf("curse.maven:thermal-expansion-69163:4782929")
+    implementation fg.deobf("curse.maven:thermal-foundation-222880:4782926")
+    implementation fg.deobf("curse.maven:cofh-core-69162:4801049")
+    implementation fg.deobf("curse.maven:thermal-dynamics-227443:4760633")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

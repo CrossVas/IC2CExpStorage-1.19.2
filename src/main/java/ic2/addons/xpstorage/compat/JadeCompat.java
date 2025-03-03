@@ -24,6 +24,7 @@ public class JadeCompat {
                 helper.maxIn(xpStorageBlock.getMaxInput());
                 helper.usage(xpStorageBlock.getEnergyUsage());
                 helper.text(TextFormatter.GREEN.translate("ic2.probe.machine.xp", xpStorageBlock.getXpStorage()));
+                helper.addTankInfo(xpStorageBlock);
             }
         }
     }
