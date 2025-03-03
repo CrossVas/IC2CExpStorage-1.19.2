@@ -41,16 +41,17 @@ public class XPStorageComponent extends GuiWidget {
         gui.addRenderableWidget(1, new ToolTipButton(x + 75, y + 40, 16, 16, this.string("+"), (T) -> this.exp(true)));
         gui.addRenderableWidget(2, new ToolTipButton(x + 26, y + 81, 70, 13, this.translate("info.xp_storage.store"), pButton -> this.transfer(false)));
         gui.addRenderableWidget(3, new ToolTipButton(x + 26, y + 95, 70, 13, this.translate("info.xp_storage.take"), pButton -> this.transfer(true)));
+        this.lastXpStorage = this.TILE.getXpStorage();
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
     public void tick(IC2Screen gui) {
-        boolean active = this.TILE.hasEnergy(this.TILE.getEnergyUsage());
-        gui.getButton(0).active = active && this.TILE.getXpStorage() > 0;
-        gui.getButton(1).active = active;
-        gui.getButton(2).active = active;
-        gui.getButton(3).active = active;
+        boolean active = this.TILE.hasEnergy(this.TILE.getEnergyUsage()); // has energy
+        gui.getButton(0).active = active && this.TILE.getXpStorage() > 0; // has energy and has XP
+        gui.getButton(1).active = active; // has energy
+        gui.getButton(2).active = active; // has energy
+        gui.getButton(3).active = active && this.TILE.getXpStorage() > 0; // has energy and has XP
     }
 
     @OnlyIn(Dist.CLIENT)

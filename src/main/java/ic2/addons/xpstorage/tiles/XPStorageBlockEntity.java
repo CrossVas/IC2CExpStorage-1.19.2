@@ -43,7 +43,8 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
 
     @NetworkInfo
     public int xpStorage = 0;
-    protected int energyUsage = 0;
+    @NetworkInfo
+    public int energyUsage = 0;
     TileCache<ElectricEnchanterTileEntity> ENCHANTER;
 
     private List<Player> lastPlayers = new ArrayList<>();
@@ -51,7 +52,7 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
     public XPStorageBlockEntity(BlockPos pos, BlockState state) {
         super(pos, state, 0, 512, 10000);
         this.addCapability(ForgeCapabilities.FLUID_HANDLER, this.fluidTank);
-        this.addGuiFields("xpStorage");
+        this.addGuiFields("xpStorage", "energyUsage");
         this.ENCHANTER = new TileCache<>(this, DirectionList.ALL, ElectricEnchanterTileEntity.class);
         this.addCaches(this.ENCHANTER);
     }
@@ -63,9 +64,10 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
         }
     }
 
-    public int calculateEnergyUsage(int storage) {
+    public void calculateEnergyUsage(int storage) {
         int divisor = (storage > 1000000) ? 5000 : 1000; // Adjusts dynamically
-        return Math.max(1, Math.min(512, storage / divisor));
+        this.energyUsage = Math.max(1, Math.min(512, storage / divisor));
+        this.updateGuiField("energyUsage");
     }
 
     public ElectricEnchanterTileEntity getValidEnchanter() {
@@ -80,60 +82,62 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
 
     @Override
     public void onTick() {
+        calculateEnergyUsage(this.getXpStorage());
         // change to active when storing xp
-        if (this.getXpStorage() > 0) {
-            this.setActive(true);
-        }
-
-        // use energy when active
-        if (this.isActive()) {
-            this.useEnergy(this.getEnergyUsage());
-        }
-
-        if (!this.fluidTank.isEmpty()) {
-            int fluidAmount = this.fluidTank.getFluidAmount();
-            if (fluidAmount >= 500) {
-                this.xpStorage += 1;
-                this.fluidTank.getFluid().shrink(1);
-                this.updateGuiField("xpStorage");
+        if (this.hasEnergy(this.getEnergyUsage())) {
+            if (this.getXpStorage() > 0) {
+                this.setActive(true);
             }
-        }
 
-        // check for Electric Enchanter every 2 seconds
-        if (this.clock(40)) {
-            this.energyUsage = calculateEnergyUsage(this.getXpStorage());
-            ElectricEnchanterTileEntity enchanter = getValidEnchanter();
-            if (enchanter != null) {
-                int storedXP = enchanter.storedExperience;
-                if (storedXP < 1000) {
-                    int needed = 1000 - storedXP;
-                    int offer = Math.min(needed, this.getXpStorage());
-                    this.xpStorage -= offer;
+            // use energy when active
+            if (this.isActive()) {
+                this.useEnergy(this.getEnergyUsage());
+            }
+
+            if (!this.fluidTank.isEmpty()) {
+                int fluidAmount = this.fluidTank.getFluidAmount();
+                if (fluidAmount >= 500) {
+                    this.xpStorage += 1;
+                    this.fluidTank.getFluid().shrink(1);
                     this.updateGuiField("xpStorage");
-                    enchanter.storedExperience += offer;
-                    enchanter.updateGuiField("storedExperience");
                 }
             }
-        }
 
-        // we update the players list every ~2 seconds
-        // if the players isn't around for a longer time, the list gets updated, adding a delay when starting the drain action - ok
-        // the drain stop is handled later based on bounding box, rather than on players list, this ensures the draining action is stopped the moment players is out of the box - ok
-        // Thanks: Speiger - IC2C Dev.
-        AABB drainArea = new AABB(this.getBlockPos()).inflate(0, 2, 0);
-        if (this.clock(40)) {
-            // gather players
-            this.lastPlayers = this.level.getEntitiesOfClass(Player.class, drainArea, player -> player.isAlive() && !player.isSpectator() && player.totalExperience > 0);
-        }
+            // check for Electric Enchanter every 2 seconds
+            if (this.clock(40)) {
+                ElectricEnchanterTileEntity enchanter = getValidEnchanter();
+                if (enchanter != null) {
+                    int storedXP = enchanter.storedExperience;
+                    if (storedXP < 1000) {
+                        int needed = 1000 - storedXP;
+                        int offer = Math.min(needed, this.getXpStorage());
+                        this.xpStorage -= offer;
+                        this.updateGuiField("xpStorage");
+                        enchanter.storedExperience += offer;
+                        enchanter.updateGuiField("storedExperience");
+                    }
+                }
+            }
 
-        // drain player's xp
-        if (!this.lastPlayers.isEmpty()) {
-            for (Player player : this.lastPlayers) {
-                if (player.getBoundingBox().intersects(drainArea)) {
-                    int xpLevel = player.totalExperience;
-                    int drain = Math.min(100, xpLevel);
-                    this.xpStorage += EnchantUtil.drainExperience(player, drain);
-                    this.updateGuiField("xpStorage");
+            // we update the players list every ~2 seconds
+            // if the players isn't around for a longer time, the list gets updated, adding a delay when starting the drain action - ok
+            // the drain stop is handled later based on bounding box, rather than on players list, this ensures the draining action is stopped the moment players is out of the box - ok
+            // Thanks: Speiger - IC2C Dev.
+            AABB drainArea = new AABB(this.getBlockPos()).inflate(0, 2, 0);
+            if (this.clock(40)) {
+                // gather players
+                this.lastPlayers = this.level.getEntitiesOfClass(Player.class, drainArea, player -> player.isAlive() && !player.isSpectator() && player.totalExperience > 0);
+            }
+
+            // drain player's xp
+            if (!this.lastPlayers.isEmpty()) {
+                for (Player player : this.lastPlayers) {
+                    if (player.getBoundingBox().intersects(drainArea)) {
+                        int xpLevel = player.totalExperience;
+                        int drain = Math.min(100, xpLevel);
+                        this.xpStorage += EnchantUtil.drainExperience(player, drain);
+                        this.updateGuiField("xpStorage");
+                    }
                 }
             }
         }
