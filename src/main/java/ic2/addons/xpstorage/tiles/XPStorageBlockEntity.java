@@ -96,9 +96,9 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
 
             if (!this.fluidTank.isEmpty()) {
                 int fluidAmount = this.fluidTank.getFluidAmount();
-                if (fluidAmount >= 500) {
+                if (fluidAmount >= 20) {
                     this.xpStorage += 1;
-                    this.fluidTank.getFluid().shrink(1);
+                    this.fluidTank.getFluid().shrink(20);
                     this.updateGuiField("xpStorage");
                 }
             }
