@@ -48,10 +48,10 @@ public class XPStorageComponent extends GuiWidget {
     @Override
     public void tick(IC2Screen gui) {
         boolean active = this.TILE.hasEnergy(this.TILE.getEnergyUsage()); // has energy
-        gui.getButton(0).active = active && this.TILE.getXpStorage() > 0; // has energy and has XP
+        gui.getButton(0).active = active && this.lastXpStorage > 0; // has energy and has XP
         gui.getButton(1).active = active; // has energy
         gui.getButton(2).active = active; // has energy
-        gui.getButton(3).active = active && this.TILE.getXpStorage() > 0; // has energy and has XP
+        gui.getButton(3).active = active && this.lastXpStorage > 0; // has energy and has XP
     }
 
     @OnlyIn(Dist.CLIENT)
