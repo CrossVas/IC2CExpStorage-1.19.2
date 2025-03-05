@@ -1,5 +1,6 @@
 package ic2.addons.xpstorage.containers;
 
+import ic2.addons.xpstorage.Refs;
 import ic2.addons.xpstorage.containers.comp.XPStorageComponent;
 import ic2.addons.xpstorage.tiles.XPStorageBlockEntity;
 import ic2.core.inventory.container.ContainerComponent;
@@ -14,9 +15,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class XPStorageContainer extends ContainerComponent<XPStorageBlockEntity> {
 
-    public static final ResourceLocation TEXTURE = new ResourceLocation("ic2", "textures/gui_sprites/blocks/machines/mv/gui_chunkloader.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(Refs.ID, "textures/gui/machines/gui_xpstorage.png");
 
-    public static final Box2i CHARGE_BOX = new Box2i(53, 22, 24, 16);
+    public static final Box2i CHARGE_BOX = new Box2i(103, 5, 14, 15);
     public static final Vec2i CHARGE_POS = new Vec2i(122, 0);
     public static final Vec2i OFFSET = new Vec2i(-11, 0);
 
@@ -30,7 +31,7 @@ public class XPStorageContainer extends ContainerComponent<XPStorageBlockEntity>
     @OnlyIn(Dist.CLIENT)
     @Override
     public void onGuiLoaded(IC2Screen screen) {
-        screen.setMaxSize(122, 115);
+        screen.setMaxSize(122, 78);
         screen.clearFlag(1);
     }
 
