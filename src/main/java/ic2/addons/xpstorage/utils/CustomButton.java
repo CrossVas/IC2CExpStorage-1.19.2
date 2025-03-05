@@ -34,6 +34,6 @@ public class CustomButton extends Button {
         if (strWidth > width - 6 && strWidth > ellipsisWidth)
             buttonText = Component.literal(font.substrByWidth(buttonText, width - 6 - ellipsisWidth).getString() + "...");
 
-        drawCenteredString(pPoseStack, font, buttonText, this.x + this.width / 2, this.y + (this.height - 8) / 2, getFGColor());
+        drawCenteredString(pPoseStack, font, buttonText, this.x + this.width / 2, this.y + (this.height - 8) / 2 + 1, getFGColor());
     }
 }
