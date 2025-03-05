@@ -8,7 +8,10 @@ import ic2.core.IC2;
 import ic2.core.block.base.cache.TileCache;
 import ic2.core.block.base.features.IClickable;
 import ic2.core.block.base.features.ITickListener;
+import ic2.core.block.base.features.IXPMachine;
 import ic2.core.block.base.tiles.BaseElectricTileEntity;
+import ic2.core.block.base.tiles.BaseLinkingTileEntity;
+import ic2.core.block.base.tiles.impls.machine.single.BasicMachineTileEntity;
 import ic2.core.block.machines.tiles.hv.ElectricEnchanterTileEntity;
 import ic2.core.inventory.base.ITileGui;
 import ic2.core.inventory.container.IC2Container;
@@ -33,6 +36,7 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
@@ -55,6 +59,8 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
     @NetworkInfo
     public int energyUsage = 0;
     TileCache<ElectricEnchanterTileEntity> ENCHANTER;
+    TileCache<BasicMachineTileEntity> BASIC_XP_PROVIDER;
+    TileCache<BaseLinkingTileEntity> MULTI_XP_PROVIDER;
 
     private List<Player> lastPlayers = new ArrayList<>();
     private List<ExperienceOrb> orbs = new ObjectArrayList<>();
@@ -64,12 +70,16 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
         this.addCapability(ForgeCapabilities.FLUID_HANDLER, this.fluidTank);
         this.addGuiFields("xpStorage", "energyUsage");
         this.ENCHANTER = new TileCache<>(this, DirectionList.ALL, ElectricEnchanterTileEntity.class);
+        this.BASIC_XP_PROVIDER = new TileCache<>(this, DirectionList.ALL, BasicMachineTileEntity.class);
+        this.MULTI_XP_PROVIDER = new TileCache<>(this, DirectionList.ALL, BaseLinkingTileEntity.class);
         this.addCaches(this.ENCHANTER);
+        this.addCaches(this.BASIC_XP_PROVIDER);
+        this.addCaches(this.MULTI_XP_PROVIDER);
     }
 
     @Override
     protected void onCachesUpdated() {
-        if (!this.ENCHANTER.isEmpty()) {
+        if (!this.ENCHANTER.isEmpty() || !this.BASIC_XP_PROVIDER.isEmpty() || !this.MULTI_XP_PROVIDER.isEmpty()) {
             this.addToTick();
         }
     }
@@ -85,6 +95,27 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
             ElectricEnchanterTileEntity enchanter = this.ENCHANTER.getHandler(direction);
             if (enchanter != null) {
                 return enchanter;
+            }
+        }
+        return null;
+    }
+
+    public BasicMachineTileEntity getValidBaseXPProvider() {
+        for (Direction direction : this.BASIC_XP_PROVIDER) {
+            BasicMachineTileEntity machine = this.BASIC_XP_PROVIDER.getHandler(direction);
+            if (machine != null) {
+                return machine;
+            }
+        }
+
+        return null;
+    }
+
+    public BaseLinkingTileEntity getValidMultiXPProvider() {
+        for (Direction direction : this.MULTI_XP_PROVIDER) {
+            BaseLinkingTileEntity linkingTileEntity = this.MULTI_XP_PROVIDER.getHandler(direction);
+            if (linkingTileEntity != null) {
+                return linkingTileEntity;
             }
         }
         return null;
@@ -125,6 +156,24 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
                         this.updateGuiField("xpStorage");
                         enchanter.storedExperience += offer;
                         enchanter.updateGuiField("storedExperience");
+                    }
+                }
+            }
+
+            if (this.clock(200)) {
+                IXPMachine xpProvider = getValidBaseXPProvider();
+                BaseLinkingTileEntity linkingTileEntity = getValidMultiXPProvider();
+                if (xpProvider != null) {
+                    int storedXP = xpProvider.getCreatedXP(true);
+                    this.xpStorage += storedXP;
+                    this.updateGuiField("xpStorage");
+                }
+                if (linkingTileEntity != null) {
+                    BlockEntity master = linkingTileEntity.getMaster();
+                    if (master instanceof IXPMachine ixpMachine) {
+                        int storedXP = ixpMachine.getCreatedXP(true);
+                        this.xpStorage += storedXP;
+                        this.updateGuiField("xpStorage");
                     }
                 }
             }
