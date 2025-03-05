@@ -2,9 +2,9 @@ package ic2.addons.xpstorage.containers.comp;
 
 import ic2.addons.xpstorage.tiles.XPStorageBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
+import ic2.addons.xpstorage.utils.CustomButton;
 import ic2.core.inventory.gui.IC2Screen;
 import ic2.core.inventory.gui.components.GuiWidget;
-import ic2.core.inventory.gui.components.base.ToolTipButton;
 import ic2.core.utils.math.geometry.Box2i;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
@@ -37,10 +37,10 @@ public class XPStorageComponent extends GuiWidget {
     public void init(IC2Screen gui) {
         int x = gui.getGuiLeft();
         int y = gui.getGuiTop();
-        gui.addRenderableWidget(0, new ToolTipButton(x + 28, y + 40, 16, 16, this.string("-"), (T) -> this.exp(false)));
-        gui.addRenderableWidget(1, new ToolTipButton(x + 75, y + 40, 16, 16, this.string("+"), (T) -> this.exp(true)));
-        gui.addRenderableWidget(2, new ToolTipButton(x + 26, y + 81, 70, 13, this.translate("info.xp_storage.store"), pButton -> this.transfer(false)));
-        gui.addRenderableWidget(3, new ToolTipButton(x + 26, y + 95, 70, 13, this.translate("info.xp_storage.take"), pButton -> this.transfer(true)));
+        gui.addRenderableWidget(0, new CustomButton(x + 25, y + 40, CustomButton.Variant.SMALL, this.string("-").withStyle(ChatFormatting.WHITE), (T) -> this.exp(false)));
+        gui.addRenderableWidget(1, new CustomButton(x + 71, y + 40, CustomButton.Variant.SMALL, this.string("+").withStyle(ChatFormatting.WHITE), (T) -> this.exp(true)));
+        gui.addRenderableWidget(2, new CustomButton(x + 25, y + 80, CustomButton.Variant.LONG, this.translate("info.xp_storage.store").withStyle(ChatFormatting.WHITE), pButton -> this.transfer(false)));
+        gui.addRenderableWidget(3, new CustomButton(x + 25, y + 95, CustomButton.Variant.LONG, this.translate("info.xp_storage.take").withStyle(ChatFormatting.WHITE), pButton -> this.transfer(true)));
         this.lastXpStorage = this.TILE.getXpStorage();
     }
 
