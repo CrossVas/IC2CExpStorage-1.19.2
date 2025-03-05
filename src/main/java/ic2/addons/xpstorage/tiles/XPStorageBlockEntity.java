@@ -13,13 +13,17 @@ import ic2.core.inventory.base.ITileGui;
 import ic2.core.inventory.container.IC2Container;
 import ic2.core.platform.registries.IC2Tags;
 import ic2.core.utils.helpers.EnchantUtil;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -32,6 +36,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITileGui, ITickListener, IClickable {
@@ -46,9 +51,10 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
     TileCache<ElectricEnchanterTileEntity> ENCHANTER;
 
     private List<Player> lastPlayers = new ArrayList<>();
+    private List<ExperienceOrb> orbs = new ObjectArrayList<>();
 
     public XPStorageBlockEntity(BlockPos pos, BlockState state) {
-        super(pos, state, 3, 512, 10000);
+        super(pos, state, 0, 512, 10000);
         this.addCapability(ForgeCapabilities.FLUID_HANDLER, this.fluidTank);
         this.addGuiFields("xpStorage", "energyUsage");
         this.ENCHANTER = new TileCache<>(this, DirectionList.ALL, ElectricEnchanterTileEntity.class);
@@ -121,10 +127,14 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
             // if the players isn't around for a longer time, the list gets updated, adding a delay when starting the drain action - ok
             // the drain stop is handled later based on bounding box, rather than on players list, this ensures the draining action is stopped the moment players is out of the box - ok
             // Thanks: Speiger - IC2C Dev.
+            AABB collectArea = new AABB(this.getBlockPos()).inflate(4);
             AABB drainArea = new AABB(this.getBlockPos()).inflate(0, 2, 0);
             if (this.clock(40)) {
                 // gather players
                 this.lastPlayers = this.level.getEntitiesOfClass(Player.class, drainArea, player -> player.isAlive() && !player.isSpectator() && player.totalExperience > 0);
+                orbs = level.getEntities(EntityType.EXPERIENCE_ORB, collectArea,
+                        orb -> orb.isAlive() && (!level.isClientSide || orb.tickCount > 1)
+                                && !orb.getPersistentData().contains("PreventRemoteMovement"));
             }
 
             // drain player's xp
@@ -136,6 +146,25 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
                         this.xpStorage += EnchantUtil.drainExperience(player, drain);
                         this.updateGuiField("xpStorage");
                     }
+                }
+            }
+
+            if (!orbs.isEmpty()) {
+                int totalXp = 0;
+                Iterator<ExperienceOrb> iterator = orbs.iterator();
+                while (iterator.hasNext()) {
+                    ExperienceOrb orb = iterator.next();
+                    if (orb.getBoundingBox().intersects(collectArea)) {
+                        int xpAmount = orb.getValue();
+                        totalXp += xpAmount;
+                        orb.discard();
+                        iterator.remove();
+                    }
+                }
+
+                if (totalXp > 0) {
+                    this.xpStorage += totalXp;
+                    this.updateGuiField("xpStorage");
                 }
             }
         }
@@ -223,8 +252,9 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
     public boolean onRightClick(Player player, InteractionHand interactionHand, Direction direction, BlockHitResult blockHitResult) {
         if (interactionHand == InteractionHand.OFF_HAND) return false;
 
+        RandomSource random = player.getRandom();
         ItemStack heldStack = player.getItemInHand(interactionHand);
-        int xpDrop = 3 + this.level.random.nextInt(5) + this.level.random.nextInt(5); // xp dropped from xp bottle taken from: ThrownExperienceBottle#onHit
+        int xpDrop = 3 + random.nextInt(5) + random.nextInt(5); // xp dropped from xp bottle taken from: ThrownExperienceBottle#onHit
         boolean actionPerformed = false;
 
         if (heldStack.is(Items.EXPERIENCE_BOTTLE)) { // handle clicking with experience bottles
@@ -247,7 +277,7 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
             if (!player.isCreative()) {
                 heldStack.shrink(1);
             }
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (player.getRandom().nextFloat() * 0.4F + 0.8F));
+            player.getLevel().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
             return true;
         }
         return false;
