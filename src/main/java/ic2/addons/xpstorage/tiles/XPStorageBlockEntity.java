@@ -223,25 +223,27 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
 
         ItemStack heldStack = player.getItemInHand(interactionHand);
         int xpDrop = 3 + this.level.random.nextInt(5) + this.level.random.nextInt(5); // xp dropped from xp bottle taken from: ThrownExperienceBottle#onHit
+        boolean actionPerformed = false;
 
         if (heldStack.is(Items.EXPERIENCE_BOTTLE)) { // handle clicking with experience bottles
             this.xpStorage += xpDrop; // add to storage
-            this.updateGuiField("xpStorage"); // update
-            if (!player.isCreative()) {
-                heldStack.shrink(1); // shrink if not in creative
-            }
+            actionPerformed = true;
             if (!player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE))) { // try to add result to player's inv
                 player.drop(new ItemStack(Items.GLASS_BOTTLE), false); // drop the result if not possible to add,
             }
-            return true;
-        } else if (heldStack.is(Items.GLASS_BOTTLE) && xpDrop <= this.getXpStorage()) {
+        }
+        if (heldStack.is(Items.GLASS_BOTTLE) && xpDrop <= this.getXpStorage()) {
             this.xpStorage -= xpDrop;
+            actionPerformed = true;
+            if (!player.getInventory().add(new ItemStack(Items.EXPERIENCE_BOTTLE))) {
+                player.drop(new ItemStack(Items.EXPERIENCE_BOTTLE), false);
+            }
+        }
+
+        if (actionPerformed) {
             this.updateGuiField("xpStorage");
             if (!player.isCreative()) {
                 heldStack.shrink(1);
-            }
-            if (!player.getInventory().add(new ItemStack(Items.EXPERIENCE_BOTTLE))) {
-                player.drop(new ItemStack(Items.EXPERIENCE_BOTTLE), false);
             }
             return true;
         }
