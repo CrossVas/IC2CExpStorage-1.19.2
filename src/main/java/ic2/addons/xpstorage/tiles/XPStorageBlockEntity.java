@@ -276,7 +276,7 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
                 finished++;
             }
             if (finished > 0) {
-                StackUtil.addOrPop(player, this.getPosition(), new ItemStack(Items.GLASS_BOTTLE, finished));
+                StackUtil.addOrPop(player, player.blockPosition(), new ItemStack(Items.GLASS_BOTTLE, finished));
                 this.xpStorage += totalTransfer;
                 actionPerformed = true;
             }
@@ -288,7 +288,7 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
                 finished++;
             }
             if (finished > 0) {
-                StackUtil.addOrPop(player, this.getPosition(), new ItemStack(Items.EXPERIENCE_BOTTLE, finished));
+                StackUtil.addOrPop(player, player.blockPosition(), new ItemStack(Items.EXPERIENCE_BOTTLE, finished));
                 this.xpStorage -= totalTransfer;
                 actionPerformed = true;
             }
