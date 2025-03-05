@@ -24,7 +24,7 @@ public class CustomButton extends Button {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         int k = this.getYImage(this.isHoveredOrFocused());
-        ScreenUtils.blitWithBorder(pPoseStack, TEXTURE, this.x, this.y, 0, k * 15, this.width, this.height, 98, 15, 1, 1, 1, 2, this.getBlitOffset());
+        ScreenUtils.blitWithBorder(pPoseStack, TEXTURE, this.x, this.y, 0, k * 15, this.width, this.height, 98, 15, 2, 3, 2, 2, this.getBlitOffset());
         this.renderBg(pPoseStack, minecraft, pMouseX, pMouseY);
 
         Component buttonText = this.getMessage();
