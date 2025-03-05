@@ -13,9 +13,11 @@ import ic2.core.block.machines.tiles.hv.ElectricEnchanterTileEntity;
 import ic2.core.inventory.base.ITileGui;
 import ic2.core.inventory.container.IC2Container;
 import ic2.core.inventory.filter.SetItemFilter;
+import ic2.core.platform.player.PlayerHandler;
 import ic2.core.platform.registries.IC2Items;
 import ic2.core.platform.registries.IC2Tags;
 import ic2.core.utils.helpers.EnchantUtil;
+import ic2.core.utils.helpers.StackUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -256,35 +258,48 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
     @Override
     public boolean onRightClick(Player player, InteractionHand interactionHand, Direction direction, BlockHitResult blockHitResult) {
         if (interactionHand == InteractionHand.OFF_HAND) return false;
+        PlayerHandler handler = PlayerHandler.getHandler(player);
+        boolean altKey = handler.altKeyDown;
 
         RandomSource random = player.getRandom();
         ItemStack heldStack = player.getItemInHand(interactionHand);
-        int xpDrop = 3 + random.nextInt(5) + random.nextInt(5); // xp dropped from xp bottle taken from: ThrownExperienceBottle#onHit
         boolean actionPerformed = false;
 
-        if (heldStack.is(Items.EXPERIENCE_BOTTLE)) { // handle clicking with experience bottles
-            this.xpStorage += xpDrop; // add to storage
-            actionPerformed = true;
-            if (!player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE))) { // try to add result to player's inv
-                player.drop(new ItemStack(Items.GLASS_BOTTLE), false); // drop the result if not possible to add,
-            }
-        }
-        if (heldStack.is(Items.GLASS_BOTTLE) && xpDrop <= this.getXpStorage()) {
-            this.xpStorage -= xpDrop;
-            actionPerformed = true;
-            if (!player.getInventory().add(new ItemStack(Items.EXPERIENCE_BOTTLE))) {
-                player.drop(new ItemStack(Items.EXPERIENCE_BOTTLE), false);
-            }
-        }
+        int totalAttempts = altKey ? Math.min(64, heldStack.getCount()) : 1;
+        int totalTransfer = 0;
+        int finished = 0;
+        int xpPoints = 3 + random.nextInt(5) + random.nextInt(5);
 
-        if (actionPerformed) {
-            this.updateGuiField("xpStorage");
-            if (!player.isCreative()) {
-                heldStack.shrink(1);
+        if (heldStack.is(Items.EXPERIENCE_BOTTLE)) { // handle clicking with experience bottles
+            for (int i = 0; i < totalAttempts; i++) {
+                totalTransfer += xpPoints;
+                finished++;
             }
+            if (finished > 0) {
+                StackUtil.addOrPop(player, this.getPosition(), new ItemStack(Items.GLASS_BOTTLE, finished));
+                this.xpStorage += totalTransfer;
+                actionPerformed = true;
+            }
+        }
+        if (heldStack.is(Items.GLASS_BOTTLE)) {
+            for (int i = 0; i < totalAttempts; i++) {
+                if (totalTransfer + xpPoints > this.getXpStorage()) break;
+                totalTransfer += xpPoints;
+                finished++;
+            }
+            if (finished > 0) {
+                StackUtil.addOrPop(player, this.getPosition(), new ItemStack(Items.EXPERIENCE_BOTTLE, finished));
+                this.xpStorage -= totalTransfer;
+                actionPerformed = true;
+            }
+        }
+        if (actionPerformed) {
+            if (!player.isCreative()) heldStack.shrink(finished);
+            this.updateGuiField("xpStorage");
             player.getLevel().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.NEUTRAL, 0.1F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
             return true;
         }
+
         if (WRENCHES.matches(heldStack)) {
             if (IC2.PLATFORM.isRendering()) {
                 player.displayClientMessage(Component.literal("You really want to lose all of your XP?"), false);
