@@ -132,6 +132,7 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
             if (this.clock(40)) {
                 // gather players
                 this.lastPlayers = this.level.getEntitiesOfClass(Player.class, drainArea, player -> player.isAlive() && !player.isSpectator() && player.totalExperience > 0);
+                // gather orbs
                 orbs = level.getEntities(EntityType.EXPERIENCE_ORB, collectArea,
                         orb -> orb.isAlive() && (!level.isClientSide || orb.tickCount > 1)
                                 && !orb.getPersistentData().contains("PreventRemoteMovement"));
