@@ -16,6 +16,8 @@ import ic2.core.utils.helpers.EnchantUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -245,6 +247,7 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
             if (!player.isCreative()) {
                 heldStack.shrink(1);
             }
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (player.getRandom().nextFloat() * 0.4F + 0.8F));
             return true;
         }
         return false;
