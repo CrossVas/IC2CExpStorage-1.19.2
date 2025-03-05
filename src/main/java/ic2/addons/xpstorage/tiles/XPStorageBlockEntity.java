@@ -277,7 +277,7 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
             if (!player.isCreative()) {
                 heldStack.shrink(1);
             }
-            player.getLevel().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.NEUTRAL, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
+            player.getLevel().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.NEUTRAL, 0.1F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
             return true;
         }
         return false;
