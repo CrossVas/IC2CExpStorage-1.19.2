@@ -1,0 +1,8 @@
+{
+  "up": "ic2cexpstorage:block/machine/hv/xpstorage/up",
+  "down": "ic2cexpstorage:block/machine/hv/xpstorage/down",
+  "east": "ic2cexpstorage:block/machine/hv/xpstorage/side",
+  "west": "ic2cexpstorage:block/machine/hv/xpstorage/side",
+  "north": "ic2cexpstorage:block/machine/hv/xpstorage/side",
+  "south": "ic2cexpstorage:block/machine/hv/xpstorage/side"
+}
