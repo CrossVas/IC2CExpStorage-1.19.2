@@ -270,29 +270,25 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
         int finished = 0;
         int xpPoints = 3 + random.nextInt(5) + random.nextInt(5);
 
-        if (heldStack.is(Items.EXPERIENCE_BOTTLE)) { // handle clicking with experience bottles
+        // filter held stack
+        // we either have experience bottle or glass bottle
+        if (heldStack.is(Items.EXPERIENCE_BOTTLE) || heldStack.is(Items.GLASS_BOTTLE)) {
+            // check for one case: we check for extraction, which uses glass bottle
+            // true for XP extraction, false for insertion
+            boolean isExtracting = heldStack.is(Items.GLASS_BOTTLE);
             for (int i = 0; i < totalAttempts; i++) {
-                totalTransfer += xpPoints;
-                finished++;
+                if (isExtracting && totalTransfer + xpPoints > this.getXpStorage()) break; // break if in extraction mode and we have need more than we actually have
+                totalTransfer += xpPoints; // continue otherwise
+                finished++; // finish the calculation
             }
+
             if (finished > 0) {
-                StackUtil.addOrPop(player, player.blockPosition(), new ItemStack(Items.GLASS_BOTTLE, finished));
-                this.xpStorage += totalTransfer;
+                StackUtil.addOrPop(player, player.blockPosition(), new ItemStack(isExtracting ? Items.EXPERIENCE_BOTTLE : Items.GLASS_BOTTLE, finished)); // return the corresponding item
+                this.xpStorage += isExtracting ? -totalTransfer : totalTransfer; // if my math is correct, this should work
                 actionPerformed = true;
             }
         }
-        if (heldStack.is(Items.GLASS_BOTTLE)) {
-            for (int i = 0; i < totalAttempts; i++) {
-                if (totalTransfer + xpPoints > this.getXpStorage()) break;
-                totalTransfer += xpPoints;
-                finished++;
-            }
-            if (finished > 0) {
-                StackUtil.addOrPop(player, player.blockPosition(), new ItemStack(Items.EXPERIENCE_BOTTLE, finished));
-                this.xpStorage -= totalTransfer;
-                actionPerformed = true;
-            }
-        }
+
         if (actionPerformed) {
             if (!player.isCreative()) heldStack.shrink(finished);
             this.updateGuiField("xpStorage");
