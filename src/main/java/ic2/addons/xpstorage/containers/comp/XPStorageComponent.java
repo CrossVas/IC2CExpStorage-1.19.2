@@ -37,10 +37,10 @@ public class XPStorageComponent extends GuiWidget {
     public void init(IC2Screen gui) {
         int x = gui.getGuiLeft();
         int y = gui.getGuiTop();
-        gui.addRenderableWidget(0, new CustomButton(x + 25, y + 40, CustomButton.Variant.SMALL, this.string("-").withStyle(ChatFormatting.WHITE), (T) -> this.exp(false)));
-        gui.addRenderableWidget(1, new CustomButton(x + 71, y + 40, CustomButton.Variant.SMALL, this.string("+").withStyle(ChatFormatting.WHITE), (T) -> this.exp(true)));
-        gui.addRenderableWidget(2, new CustomButton(x + 25, y + 80, CustomButton.Variant.LONG, this.translate("info.xp_storage.store").withStyle(ChatFormatting.WHITE), pButton -> this.transfer(false)));
-        gui.addRenderableWidget(3, new CustomButton(x + 25, y + 95, CustomButton.Variant.LONG, this.translate("info.xp_storage.take").withStyle(ChatFormatting.WHITE), pButton -> this.transfer(true)));
+        gui.addRenderableWidget(0, new CustomButton(x + 25, y + 40, 26, 15, this.string("-").withStyle(ChatFormatting.WHITE), (T) -> this.exp(false)));
+        gui.addRenderableWidget(1, new CustomButton(x + 71, y + 40, 26, 15, this.string("+").withStyle(ChatFormatting.WHITE), (T) -> this.exp(true)));
+        gui.addRenderableWidget(2, new CustomButton(x + 25, y + 80, 72, 15, this.translate("info.xp_storage.store").withStyle(ChatFormatting.WHITE), pButton -> this.transfer(false)));
+        gui.addRenderableWidget(3, new CustomButton(x + 25, y + 95, 72, 15, this.translate("info.xp_storage.take").withStyle(ChatFormatting.WHITE), pButton -> this.transfer(true)));
         this.lastXpStorage = this.TILE.getXpStorage();
     }
 

@@ -14,8 +14,8 @@ public class CustomButton extends Button {
 
     protected ResourceLocation TEXTURE;
 
-    public CustomButton(int pX, int pY, Variant variant, Component pMessage, OnPress pOnPress) {
-        super(pX, pY, variant.pUWidth, variant.pVHeight, pMessage, pOnPress);
+    public CustomButton(int pX, int pY, int width, int height, Component pMessage, OnPress pOnPress) {
+        super(pX, pY, width, height, pMessage, pOnPress);
         this.TEXTURE = new ResourceLocation(Refs.ID, "textures/gui/button.png");
     }
 
@@ -35,18 +35,5 @@ public class CustomButton extends Button {
             buttonText = Component.literal(font.substrByWidth(buttonText, width - 6 - ellipsisWidth).getString() + "...");
 
         drawCenteredString(pPoseStack, font, buttonText, this.x + this.width / 2, this.y + (this.height - 8) / 2, getFGColor());
-    }
-
-    public enum Variant {
-        SMALL(26, 15),
-        LONG(72, 15);
-
-        final int pUWidth;
-        final int pVHeight;
-
-        Variant(int pUWidth, int pVHeight) {
-            this.pUWidth = pUWidth;
-            this.pVHeight = pVHeight;
-        }
     }
 }
