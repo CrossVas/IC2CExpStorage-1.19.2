@@ -1,6 +1,7 @@
 package ic2.addons.xpstorage;
 
 import ic2.addons.xpstorage.compat.jade.JadeHandler;
+import ic2.addons.xpstorage.compat.top.TOPHandler;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
@@ -21,6 +22,9 @@ public class IC2CExpStorage {
     public void commonLoad(FMLCommonSetupEvent e) {
         if (ModList.get().isLoaded("ic2jadeplugin")) {
             JadeHandler.init();
+        }
+        if (ModList.get().isLoaded("theoneprobe")) {
+            TOPHandler.init();
         }
     }
 

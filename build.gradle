@@ -170,6 +170,8 @@ dependencies {
 //    implementation fg.deobf("curse.maven:jade-addons-ic2classic-932859:6180964")
     implementation fg.deobf(files("libs/IC2CJadeAddon-1.19.2-2.0.4.1-dev.jar"))
 
+    implementation fg.deobf("curse.maven:the-one-probe-245211:3965693")
+
     implementation fg.deobf("curse.maven:thermal-expansion-69163:4782929")
     implementation fg.deobf("curse.maven:thermal-foundation-222880:4782926")
     implementation fg.deobf("curse.maven:cofh-core-69162:4801049")
