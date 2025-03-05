@@ -268,7 +268,6 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
         int totalAttempts = altKey ? Math.min(64, heldStack.getCount()) : 1;
         int totalTransfer = 0;
         int finished = 0;
-        int xpPoints = 3 + random.nextInt(5) + random.nextInt(5);
 
         // filter held stack
         // we either have experience bottle or glass bottle
@@ -277,6 +276,7 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
             // true for XP extraction, false for insertion
             boolean isExtracting = heldStack.is(Items.GLASS_BOTTLE);
             for (int i = 0; i < totalAttempts; i++) {
+                int xpPoints = 3 + random.nextInt(5) + random.nextInt(5);
                 if (isExtracting && totalTransfer + xpPoints > this.getXpStorage()) break; // break if in extraction mode and we have need more than we actually have
                 totalTransfer += xpPoints; // continue otherwise
                 finished++; // finish the calculation
