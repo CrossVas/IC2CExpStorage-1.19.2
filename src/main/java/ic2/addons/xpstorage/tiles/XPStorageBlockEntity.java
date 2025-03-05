@@ -4,6 +4,7 @@ import ic2.addons.xpstorage.IC2CExpStorageData;
 import ic2.addons.xpstorage.containers.XPStorageContainer;
 import ic2.api.network.buffer.NetworkInfo;
 import ic2.api.util.DirectionList;
+import ic2.core.IC2;
 import ic2.core.block.base.cache.TileCache;
 import ic2.core.block.base.features.IClickable;
 import ic2.core.block.base.features.ITickListener;
@@ -11,12 +12,15 @@ import ic2.core.block.base.tiles.BaseElectricTileEntity;
 import ic2.core.block.machines.tiles.hv.ElectricEnchanterTileEntity;
 import ic2.core.inventory.base.ITileGui;
 import ic2.core.inventory.container.IC2Container;
+import ic2.core.inventory.filter.SetItemFilter;
+import ic2.core.platform.registries.IC2Items;
 import ic2.core.platform.registries.IC2Tags;
 import ic2.core.utils.helpers.EnchantUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
@@ -281,6 +285,14 @@ public class XPStorageBlockEntity extends BaseElectricTileEntity implements ITil
             player.getLevel().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.NEUTRAL, 0.1F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
             return true;
         }
+        if (WRENCHES.matches(heldStack)) {
+            if (IC2.PLATFORM.isRendering()) {
+                player.displayClientMessage(Component.literal("You really want to lose all of your XP?"), false);
+            }
+            return false;
+        }
         return false;
     }
+
+    SetItemFilter WRENCHES = new SetItemFilter(IC2Items.WRENCH, IC2Items.ELECTRIC_WRENCH, IC2Items.PRECISION_WRENCH);
 }
